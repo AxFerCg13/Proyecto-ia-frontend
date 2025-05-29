@@ -280,3 +280,97 @@ footer {
         grid-template-columns: 1fr 1fr;
     }
 }
+/* Agrega esto al final de tu archivo CSS, antes de los media queries */
+
+.recommendations-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.place-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 4px solid var(--primary-color);
+}
+
+.place-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.place-card h3 {
+    background: var(--primary-color);
+    color: white;
+    padding: 1rem;
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.place-content {
+    display: flex;
+    padding: 1.5rem;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.place-image {
+    width: 200px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.place-info {
+    flex: 1;
+    text-align: left;
+}
+
+.place-info p {
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+}
+
+.place-info strong {
+    color: var(--primary-color);
+}
+
+.map-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.map-link:hover {
+    color: var(--accent-color);
+}
+
+.map-link i {
+    margin-right: 5px;
+}
+
+@media (max-width: 768px) {
+    .place-content {
+        flex-direction: column;
+        padding: 1rem;
+    }
+    
+    .place-image {
+        width: 100%;
+        height: auto;
+        max-height: 200px;
+    }
+    
+    .place-card h3 {
+        font-size: 1.1rem;
+        padding: 0.8rem;
+    }
+}
