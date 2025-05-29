@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
             input.type = 'radio';
             input.id = `q${index}_opt${optionIndex}`;
             input.name = `question_${index}`;
-            input.value = optionIndex + 1;
+            input.value = optionIndex + 1; // Valores 1-4 para los radio buttons
             
             const label = document.createElement('label');
             label.htmlFor = `q${index}_opt${optionIndex}`;
@@ -73,6 +73,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const answeredQuestions = document.querySelectorAll('input[type="radio"]:checked').length;
         const progress = (answeredQuestions / totalQuestions) * 100;
         progressBar.style.width = `${progress}%`;
+    }
+    
+    // Función para mapear los valores de las opciones
+    function mapOptionValue(optionIndex) {
+        switch(optionIndex) {
+            case 0: return 0;    // Nulo
+            case 1: return 3;    // Leve
+            case 2: return 7;    // Moderado
+            case 3: return 1;    // Alto
+            default: return 0;   // Por defecto
+        }
     }
     
     // Manejar envío del formulario
@@ -116,60 +127,57 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Obtener recomendación desde la API
-async function getRecommendation(userAnswers) {
-    try {
-        const requestBody = {
-            first: userAnswers[0] || 0,
-            second: userAnswers[1] || 0,
-            third: userAnswers[2] || 0,
-            fourth: userAnswers[3] || 0,
-            fifth: userAnswers[4] || 0,
-            sixth: userAnswers[5] || 0,
-            seventh: userAnswers[6] || 0,
-            eighth: userAnswers[7] || 0,
-            ninth: userAnswers[8] || 0,
-            tenth: userAnswers[9] || 0,
-            eleventh: userAnswers[10] || 0,
-            twelfth: userAnswers[11] || 0,
-            thirteenth: userAnswers[12] || 0,
-            fourteenth: userAnswers[13] || 0,
-            fifteenth: userAnswers[14] || 0,
-            sixteenth: userAnswers[15] || 0,
-            seventeenth: userAnswers[16] || 0
-        };
+    async function getRecommendation(userAnswers) {
+        try {
+            const requestBody = {
+                first: mapOptionValue(userAnswers[0] - 1) || 0,
+                second: mapOptionValue(userAnswers[1] - 1) || 0,
+                third: mapOptionValue(userAnswers[2] - 1) || 0,
+                fourth: mapOptionValue(userAnswers[3] - 1) || 0,
+                fifth: mapOptionValue(userAnswers[4] - 1) || 0,
+                sixth: mapOptionValue(userAnswers[5] - 1) || 0,
+                seventh: mapOptionValue(userAnswers[6] - 1) || 0,
+                eighth: mapOptionValue(userAnswers[7] - 1) || 0,
+                ninth: mapOptionValue(userAnswers[8] - 1) || 0,
+                tenth: mapOptionValue(userAnswers[9] - 1) || 0,
+                eleventh: mapOptionValue(userAnswers[10] - 1) || 0,
+                twelfth: mapOptionValue(userAnswers[11] - 1) || 0,
+                thirteenth: mapOptionValue(userAnswers[12] - 1) || 0,
+                fourteenth: mapOptionValue(userAnswers[13] - 1) || 0,
+                fifteenth: mapOptionValue(userAnswers[14] - 1) || 0,
+                sixteenth: mapOptionValue(userAnswers[15] - 1) || 0,
+                seventeenth: mapOptionValue(userAnswers[16] - 1) || 0
+            };
 
-        console.log("Enviando a la API:", requestBody); // Para depuración
+            console.log("Enviando a la API:", requestBody);
 
-        const response = await fetch('http://localhost:8000/recommends', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody)
-        });
+            const response = await fetch('http://localhost:8000/recommends', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody)
+            });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Error del servidor:", errorText);
-            throw new Error(`Error HTTP: ${response.status}`);
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Error del servidor:", errorText);
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log("Respuesta de la API:", data);
+            return data.recommendation;
+        } catch (error) {
+            console.error('Error completo:', error);
+            throw error;
         }
-
-        const data = await response.json();
-        console.log("Respuesta de la API:", data); // Para depuración
-        return data.recommendation;
-    } catch (error) {
-        console.error('Error completo:', error);
-        throw error;
     }
-}
     
     // Mostrar recomendación con detalles del lugar
     async function showRecommendation(placeName) {
         try {
             recommendationDiv.textContent = placeName;
-            
-            // Aquí puedes agregar más lógica para mostrar los detalles del lugar
-            // basado en lo que devuelva tu API
             
             placeDetailsDiv.innerHTML = `
                 <div class="place-info">
