@@ -1,11 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proyecto IA</title>
+    <title>Encuentra Tu Lugar Ideal | Proyecto IA</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Hello world!!!</h1>
+    <div class="hero">
+        <div class="hero-content">
+            <h1><i class="fas fa-map-marked-alt"></i> Encuentra Tu Lugar Ideal</h1>
+            <p>Descubre el destino perfecto según tus preferencias con nuestro sistema inteligente</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <form id="questionnaire">
+            <div id="questions-container"></div>
+            <div class="form-footer">
+                <button type="submit" id="submit-btn">
+                    <i class="fas fa-search-location"></i> Encontrar mi lugar
+                </button>
+            </div>
+        </form>
+
+        <div id="results" class="hidden">
+            <div class="result-card">
+                <h2><i class="fas fa-award"></i> Tu recomendación perfecta es:</h2>
+                <div id="recommendation" class="place-name"></div>
+                
+                <div class="gallery-container">
+                    <div id="place-images" class="place-gallery"></div>
+                </div>
+                
+                <div id="place-details" class="place-description"></div>
+                
+                
+                <button id="restart-btn" class="restart-btn">
+                    <i class="fas fa-redo"></i> Volver a empezar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Proyecto IA - Sistema de Recomendación con Lógica Difusa</p>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
