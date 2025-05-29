@@ -75,17 +75,16 @@ document.addEventListener('DOMContentLoaded', function() {
         progressBar.style.width = `${progress}%`;
     }
     
-    // Función para mapear los valores de las opciones
-    function mapOptionValue(optionIndex) {
-        switch(optionIndex) {
-            case 0: return 0;    // Nulo
-            case 1: return 3;    // Leve
-            case 2: return 7;    // Moderado
-            case 3: return 1;    // Alto
-            default: return 0;   // Por defecto
-        }
+ // Función para mapear los valores de las opciones (ahora con decimales)
+function mapOptionValue(optionIndex) {
+    switch(optionIndex) {
+        case 0: return 0.0;    // Nulo
+        case 1: return 0.3;    // Leve
+        case 2: return 0.7;    // Moderado
+        case 3: return 1.0;    // Alto
+        default: return 0.0;   // Por defecto
     }
-    
+}
     // Manejar envío del formulario
     questionnaireForm.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -113,9 +112,9 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.disabled = true;
         
         try {
-            const recommendation = await getRecommendation(answers);
-            if (recommendation) {
-                await showRecommendation(recommendation);
+            const response = await getRecommendation(answers);
+            if (response) {
+                await showRecommendation(response);
             }
         } catch (error) {
             console.error('Error:', error);
@@ -165,49 +164,73 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(`Error HTTP: ${response.status}`);
             }
 
-            const data = await response.json();
-            console.log("Respuesta de la API:", data);
-            return data.recommendation;
+            return await response.json();
         } catch (error) {
             console.error('Error completo:', error);
             throw error;
         }
     }
     
-    // Mostrar recomendación con detalles del lugar
-    async function showRecommendation(placeName) {
-        try {
-            recommendationDiv.textContent = placeName;
+async function showRecommendation(apiResponse) {
+    try {
+        // Verificar si hay lugares recomendados
+        if (!apiResponse.recommended_places || apiResponse.recommended_places.length === 0) {
+            recommendationDiv.textContent = "Lo sentimos, no hay lugares de acuerdo a tus intereses";
+            placeDetailsDiv.innerHTML = '';
+            placeImagesDiv.innerHTML = '';
             
-            placeDetailsDiv.innerHTML = `
-                <div class="place-info">
-                    <p class="place-description">Lugar recomendado: ${placeName}</p>
-                    <div class="place-links">
-                        <a href="#" target="_blank" class="map-link" id="map-link">
+            questionnaireForm.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
+
+        // Mostrar título general
+        recommendationDiv.textContent = "Lugares recomendados para ti:";
+        
+        // Limpiar contenedores
+        placeDetailsDiv.innerHTML = '';
+        placeImagesDiv.innerHTML = '';
+
+        // Crear contenedor para todas las recomendaciones
+        const recommendationsContainer = document.createElement('div');
+        recommendationsContainer.className = 'recommendations-container';
+
+        // Iterar sobre todos los lugares recomendados
+        apiResponse.recommended_places.forEach((place, index) => {
+            const placeCard = document.createElement('div');
+            placeCard.className = 'place-card';
+            
+            placeCard.innerHTML = `
+                <h3>${index + 1}. ${place.name}</h3>
+                <div class="place-content">
+                    <img src="${place.urlPhoto || 'https://via.placeholder.com/300x200?text=Imagen+no+disponible'}" 
+                         alt="${place.name}" class="place-image">
+                    <div class="place-info">
+                        <p><strong>Dirección:</strong> ${place.direccion}</p>
+                        <p><strong>Puntuación:</strong> ${place.score.toFixed(2)}</p>
+                        <a href="${place.urlGoogleMaps}" target="_blank" class="map-link">
                             <i class="fas fa-map-marker-alt"></i> Ver en Google Maps
                         </a>
                     </div>
                 </div>
             `;
             
-            // Mostrar imagen por defecto
-            placeImagesDiv.innerHTML = '';
-            const img = document.createElement('img');
-            img.src = 'https://via.placeholder.com/600x400?text=Imagen+de+' + encodeURIComponent(placeName);
-            img.alt = placeName;
-            img.className = 'main-place-image';
-            placeImagesDiv.appendChild(img);
-            
-            // Ocultar formulario y mostrar resultados
-            questionnaireForm.classList.add('hidden');
-            resultsSection.classList.remove('hidden');
-            resultsSection.scrollIntoView({ behavior: 'smooth' });
-            
-        } catch (error) {
-            console.error('Error al mostrar recomendación:', error);
-            throw error;
-        }
+            recommendationsContainer.appendChild(placeCard);
+        });
+
+        placeDetailsDiv.appendChild(recommendationsContainer);
+        
+        // Ocultar formulario y mostrar resultados
+        questionnaireForm.classList.add('hidden');
+        resultsSection.classList.remove('hidden');
+        resultsSection.scrollIntoView({ behavior: 'smooth' });
+        
+    } catch (error) {
+        console.error('Error al mostrar recomendación:', error);
+        throw error;
     }
+}
     
     // Manejar reinicio
     restartBtn.addEventListener('click', function() {
